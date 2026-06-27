@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#3a2d6b" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Flip Tycoon — Wholesale Empire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg-blob b1"></div>
+    <div class="bg-blob b2"></div>
+    <div class="bg-blob b3"></div>
+    <div class="skyline"></div>
+    <div class="floaties" id="floaties"></div>
+  </div>
+
+  <!-- ===== Splash / Title ===== -->
+  <section class="screen splash" id="splash">
+    <div class="splash-inner">
+      <div class="logo-emoji">🏘️</div>
+      <h1 class="game-title">FLIP<span>TYCOON</span></h1>
+      <p class="tagline">Build your wholesaling empire — one deal at a time.</p>
+      <button class="btn btn-play" id="playBtn">▶ PLAY</button>
+      <button class="btn btn-ghost" id="howBtn">How to Play</button>
+      <button class="btn btn-ghost btn-danger-ghost hidden" id="continueWipe">New Game (wipe save)</button>
+      <p class="credit">A cartoon real-estate tycoon game</p>
+    </div>
+  </section>
+
+  <!-- ===== How To Play ===== -->
+  <section class="screen modal-screen hidden" id="howScreen">
+    <div class="sheet">
+      <h2>📚 How to Wholesale</h2>
+      <ol class="how-list">
+        <li><b>🔍 Hunt</b> for motivated sellers to find property leads.</li>
+        <li><b>🧮 Analyze</b> each deal. The <i>70% Rule</i> says your max offer = <b>70% of the After-Repair Value</b> minus repair costs.</li>
+        <li><b>🤝 Negotiate</b> a contract <i>below</i> your max offer — the gap is your profit.</li>
+        <li><b>💸 Assign</b> the contract to a cash buyer and collect your wholesale fee (usually $10k–$15k!).</li>
+        <li><b>📈 Reinvest</b> in upgrades, unlock pricier markets, and climb the ranks.</li>
+      </ol>
+      <p class="tip">💡 You never buy the house — you flip the <i>contract</i>. Low risk, fast cash!</p>
+      <button class="btn btn-play" id="howClose">Got it!</button>
+    </div>
+  </section>
+
+  <!-- ===== Main Game ===== -->
+  <main class="screen game hidden" id="game">
+    <!-- Top HUD -->
+    <header class="hud">
+      <div class="hud-row">
+        <div class="cash-wrap">
+          <div class="cash-label">CASH</div>
+          <div class="cash" id="cash">$0</div>
+        </div>
+        <div class="hud-right">
+          <div class="rank-pill" id="rankPill">
+            <span class="rank-icon" id="rankIcon">🥉</span>
+            <span class="rank-name" id="rankName">Rookie</span>
+          </div>
+          <button class="icon-btn" id="muteBtn" title="Sound">🔊</button>
+        </div>
+      </div>
+      <div class="hud-row meta">
+        <div class="meta-chip"><span>📅 Day</span><b id="day">1</b></div>
+        <div class="meta-chip energy"><span>⚡ Energy</span><b id="energy">5</b><b class="muted">/<span id="maxEnergy">5</span></b></div>
+        <div class="meta-chip"><span>🏆 Deals</span><b id="dealsClosed">0</b></div>
+      </div>
+      <div class="goal-bar" id="goalBar" title="Net worth to next rank">
+        <div class="goal-fill" id="goalFill"></div>
+        <div class="goal-text" id="goalText">Next rank: $50k</div>
+      </div>
+    </header>
+
+    <!-- Tab content -->
+    <div class="content" id="content">
+
+      <!-- DEALS TAB -->
+      <section class="tab" id="tab-deals">
+        <div class="tab-head">
+          <h2>📂 Active Pipeline</h2>
+          <span class="market-badge" id="marketBadge">🏡 Suburbs</span>
+        </div>
+        <div class="deal-list" id="dealList"></div>
+        <div class="empty-state" id="emptyDeals">
+          <div class="empty-emoji">🕵️</div>
+          <p>No leads yet!</p>
+          <span>Tap <b>Hunt</b> to find motivated sellers.</span>
+        </div>
+      </section>
+
+      <!-- HUNT TAB -->
+      <section class="tab hidden" id="tab-hunt">
+        <div class="tab-head"><h2>🔍 Lead Generation</h2></div>
+        <div class="hunt-card">
+          <div class="hunt-emoji" id="huntEmoji">🏚️</div>
+          <p class="hunt-desc">Send out marketing to drum up motivated sellers. Better marketing finds better deals.</p>
+          <div class="hunt-stats">
+            <div><span>Leads / hunt</span><b id="leadsPerHunt">1–2</b></div>
+            <div><span>Energy cost</span><b>⚡ 1</b></div>
+            <div><span>Marketing</span><b id="mktLevel">Flyers</b></div>
+          </div>
+          <button class="btn btn-hunt" id="huntBtn">🔍 HUNT FOR DEALS</button>
+          <button class="btn btn-ghost" id="sleepBtn">🌙 End Day (rest &amp; refill energy)</button>
+        </div>
+      </section>
+
+      <!-- UPGRADES TAB -->
+      <section class="tab hidden" id="tab-shop">
+        <div class="tab-head"><h2>🛠️ Upgrades</h2></div>
+        <div class="shop-list" id="shopList"></div>
+        <div class="tab-head" style="margin-top:18px"><h2>🌆 Markets</h2></div>
+        <div class="market-list" id="marketList"></div>
+      </section>
+
+      <!-- STATS TAB -->
+      <section class="tab hidden" id="tab-stats">
+        <div class="tab-head"><h2>📊 Career Stats</h2></div>
+        <div class="stat-grid" id="statGrid"></div>
+        <button class="btn btn-ghost btn-danger-ghost" id="resetBtn">🗑️ Reset Career</button>
+      </section>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="nav">
+      <button class="nav-btn active" data-tab="deals"><span class="nav-ico">📂</span><span class="nav-lbl">Deals</span><span class="nav-badge hidden" id="navBadge">0</span></button>
+      <button class="nav-btn" data-tab="hunt"><span class="nav-ico">🔍</span><span class="nav-lbl">Hunt</span></button>
+      <button class="nav-btn" data-tab="shop"><span class="nav-ico">🛠️</span><span class="nav-lbl">Shop</span></button>
+      <button class="nav-btn" data-tab="stats"><span class="nav-ico">📊</span><span class="nav-lbl">Stats</span></button>
+    </nav>
+  </main>
+
+  <!-- ===== Deal Modal ===== -->
+  <div class="overlay hidden" id="dealOverlay">
+    <div class="deal-modal" id="dealModal"></div>
+  </div>
+
+  <!-- ===== Toast + FX ===== -->
+  <div class="toast-wrap" id="toastWrap"></div>
+  <canvas class="confetti" id="confetti"></canvas>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
