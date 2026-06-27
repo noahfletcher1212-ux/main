@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#3a2d6b" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Flip Tycoon — Wholesale Empire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   FLIP TYCOON — cartoon real-estate wholesaling game
+   ============================================================ */
+:root{
+  --pink:#ff5d8f; --pink-d:#e23e72;
+  --purple:#7b5cff; --purple-d:#5a3ee0;
+  --blue:#36c5f0; --blue-d:#1aa3d6;
+  --green:#36d39a; --green-d:#1fae7d;
+  --gold:#ffd23f; --gold-d:#f5b800;
+  --orange:#ff924c; --red:#ff5e57;
+  --ink:#2b2350; --ink-soft:#5a5187;
+  --card:#ffffff; --card-2:#fbf8ff;
+  --bg-1:#3a2d6b; --bg-2:#5b3a8c; --bg-3:#8a4fb0;
+  --shadow:0 8px 0 rgba(43,35,80,.18), 0 14px 30px rgba(43,35,80,.25);
+  --shadow-sm:0 4px 0 rgba(43,35,80,.16), 0 8px 16px rgba(43,35,80,.18);
+  --r:22px; --r-sm:16px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:'Nunito',system-ui,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(165deg,var(--bg-1),var(--bg-2) 55%,var(--bg-3));
+  overflow:hidden;
+  position:fixed;inset:0;
+  user-select:none;-webkit-user-select:none;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.game-title,.cash,.btn{font-family:'Baloo 2',cursive;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+.hidden{display:none !important;}
+.muted{opacity:.55;}
+
+/* ---------- Animated background ---------- */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg-blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.5;mix-blend-mode:screen;animation:drift 18s ease-in-out infinite;}
+.b1{width:60vw;height:60vw;background:var(--pink);top:-10vh;left:-15vw;}
+.b2{width:55vw;height:55vw;background:var(--blue);bottom:-12vh;right:-12vw;animation-delay:-6s;}
+.b3{width:45vw;height:45vw;background:var(--gold);top:30vh;right:20vw;animation-delay:-11s;opacity:.35;}
+@keyframes drift{
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(4vw,5vh) scale(1.12);}
+  66%{transform:translate(-5vw,-3vh) scale(.95);}
+}
+.skyline{position:absolute;left:0;right:0;bottom:0;height:120px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,255,255,.04) 18px 20px),
+    linear-gradient(to top, rgba(20,12,45,.55), transparent);
+  -webkit-mask:linear-gradient(to top, #000 30%, transparent);
+          mask:linear-gradient(to top, #000 30%, transparent);
+}
+.floaties{position:absolute;inset:0;}
+.floaties span{position:absolute;font-size:26px;opacity:.18;animation:floatUp linear infinite;}
+@keyframes floatUp{
+  from{transform:translateY(110vh) rotate(0deg);}
+  to{transform:translateY(-15vh) rotate(360deg);}
+}
+
+/* ---------- Screens ---------- */
+.screen{position:relative;z-index:1;height:100%;}
+
+/* ---------- Splash ---------- */
+.splash{display:flex;align-items:center;justify-content:center;padding:24px;}
+.splash-inner{text-align:center;animation:popIn .6s cubic-bezier(.2,1.3,.4,1) both;}
+.logo-emoji{font-size:80px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.35));animation:bobBig 3s ease-in-out infinite;}
+@keyframes bobBig{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-14px) rotate(3deg);}}
+.game-title{
+  font-size:clamp(48px,16vw,84px);font-weight:800;line-height:.9;letter-spacing:1px;color:#fff;
+  text-shadow:0 4px 0 var(--purple-d),0 8px 0 rgba(0,0,0,.18),0 18px 30px rgba(0,0,0,.4);
+  margin:6px 0;
+}
+.game-title span{display:block;color:var(--gold);text-shadow:0 4px 0 var(--gold-d),0 8px 0 rgba(0,0,0,.18);}
+.tagline{color:#fff;opacity:.92;font-weight:700;font-size:16px;margin:10px auto 26px;max-width:300px;}
+.credit{color:#fff;opacity:.55;margin-top:22px;font-size:13px;font-weight:700;}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:block;width:100%;max-width:340px;margin:12px auto;padding:16px 22px;
+  font-size:19px;font-weight:800;letter-spacing:.3px;color:#fff;border-radius:var(--r);
+  background:linear-gradient(180deg,var(--purple),var(--purple-d));
+  box-shadow:var(--shadow);transition:transform .08s, box-shadow .08s, filter .15s;
+}
+.btn:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(43,35,80,.18),0 6px 14px rgba(43,35,80,.25);}
+.btn-play{background:linear-gradient(180deg,var(--gold),var(--gold-d));color:var(--ink);font-size:22px;
+  box-shadow:0 8px 0 var(--gold-d),0 16px 30px rgba(245,184,0,.45);}
+.btn-play:active{box-shadow:0 2px 0 var(--gold-d),0 6px 14px rgba(245,184,0,.4);}
+.btn-hunt{background:linear-gradient(180deg,var(--green),var(--green-d));
+  box-shadow:0 8px 0 var(--green-d),0 16px 30px rgba(31,174,125,.4);font-size:20px;}
+.btn-hunt:active{box-shadow:0 2px 0 var(--green-d);}
+.btn-ghost{background:rgba(255,255,255,.14);box-shadow:none;border:2px solid rgba(255,255,255,.25);font-size:16px;padding:13px;}
+.btn-ghost:active{transform:translateY(2px);}
+.btn-danger-ghost{color:#ffd5d5;border-color:rgba(255,120,120,.4);background:rgba(255,80,80,.12);}
+.btn:disabled{filter:grayscale(.6) brightness(.85);opacity:.6;pointer-events:none;}
+
+/* ---------- Modal screens ---------- */
+.modal-screen{display:flex;align-items:center;justify-content:center;padding:20px;}
+.sheet{
+  background:var(--card);border-radius:28px;padding:26px 22px;max-width:420px;width:100%;
+  box-shadow:var(--shadow);animation:popIn .4s cubic-bezier(.2,1.3,.4,1) both;
+  max-height:90vh;overflow:auto;
+}
+.sheet h2{font-size:26px;margin-bottom:16px;color:var(--purple-d);text-align:center;}
+.how-list{list-style:none;display:flex;flex-direction:column;gap:14px;}
+.how-list li{background:var(--card-2);border-radius:var(--r-sm);padding:13px 15px;font-weight:700;line-height:1.4;font-size:15px;border:2px solid #efe9fb;}
+.how-list b{color:var(--purple-d);}
+.tip{margin:18px 0 8px;background:#fff7df;border:2px dashed var(--gold-d);border-radius:var(--r-sm);padding:12px 14px;font-weight:700;font-size:14px;}
+
+/* ---------- HUD ---------- */
+.game{display:flex;flex-direction:column;height:100%;}
+.hud{
+  padding:calc(12px + var(--safe-t)) 16px 12px;
+  background:linear-gradient(180deg,rgba(43,35,80,.55),rgba(43,35,80,0));
+  position:relative;z-index:3;
+}
+.hud-row{display:flex;align-items:center;justify-content:space-between;}
+.cash-label{font-size:11px;font-weight:900;letter-spacing:2px;color:#fff;opacity:.7;}
+.cash{font-size:34px;font-weight:800;color:#fff;line-height:1;text-shadow:0 3px 0 rgba(0,0,0,.2);transition:color .2s;}
+.cash.bump{animation:cashBump .4s ease;}
+@keyframes cashBump{0%{transform:scale(1);}40%{transform:scale(1.18);color:var(--gold);}100%{transform:scale(1);}}
+.hud-right{display:flex;align-items:center;gap:8px;}
+.rank-pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.22);
+  padding:6px 12px;border-radius:30px;color:#fff;font-weight:800;font-size:14px;backdrop-filter:blur(4px);}
+.rank-icon{font-size:18px;}
+.icon-btn{font-size:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.16);
+  border:2px solid rgba(255,255,255,.22);display:grid;place-items:center;}
+.meta{margin-top:12px;gap:8px;}
+.meta-chip{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(255,255,255,.14);
+  border:2px solid rgba(255,255,255,.18);border-radius:14px;padding:7px 4px;color:#fff;font-weight:700;font-size:13px;}
+.meta-chip b{font-weight:900;}
+.meta-chip span{opacity:.85;font-size:12px;}
+.meta-chip.energy.low b{color:var(--gold);}
+.goal-bar{margin-top:12px;height:24px;border-radius:14px;background:rgba(0,0,0,.25);position:relative;overflow:hidden;
+  border:2px solid rgba(255,255,255,.18);}
+.goal-fill{position:absolute;inset:0;width:0%;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:12px;
+  transition:width .6s cubic-bezier(.2,1,.3,1);}
+.goal-text{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;
+  text-shadow:0 1px 2px rgba(0,0,0,.5);}
+
+/* ---------- Content / Tabs ---------- */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 16px 20px;-webkit-overflow-scrolling:touch;}
+.tab{animation:fadeUp .35s ease both;}
+.tab-head{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 12px;}
+.tab-head h2{color:#fff;font-size:21px;text-shadow:0 2px 0 rgba(0,0,0,.2);}
+.market-badge{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.22);color:#fff;font-weight:800;
+  padding:6px 12px;border-radius:20px;font-size:13px;}
+
+/* ---------- Deal cards ---------- */
+.deal-list{display:flex;flex-direction:column;gap:14px;}
+.deal-card{
+  background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow-sm);
+  position:relative;overflow:hidden;animation:cardIn .45s cubic-bezier(.2,1.3,.4,1) both;
+  border:3px solid #fff;
+}
+.deal-card.contracted{border-color:var(--green);}
+.deal-card::before{content:"";position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue));}
+.dc-top{display:flex;gap:12px;align-items:center;}
+.dc-emoji{font-size:46px;flex-shrink:0;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18));}
+.dc-info{flex:1;min-width:0;}
+.dc-addr{font-weight:900;font-size:17px;color:var(--ink);font-family:'Baloo 2';line-height:1.1;}
+.dc-sub{font-size:12px;color:var(--ink-soft);font-weight:700;margin-top:2px;}
+.dc-tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-top:6px;}
+.tag-hot{background:#ffe3e3;color:var(--red);}
+.tag-warm{background:#fff1d6;color:var(--gold-d);}
+.tag-cold{background:#e2f0ff;color:var(--blue-d);}
+.tag-contract{background:#d8f8ec;color:var(--green-d);}
+.dc-status{position:absolute;top:14px;right:14px;font-size:11px;font-weight:900;color:var(--green-d);
+  background:#d8f8ec;padding:4px 10px;border-radius:20px;}
+.dc-figures{display:flex;gap:8px;margin-top:14px;}
+.fig{flex:1;background:var(--card-2);border-radius:12px;padding:8px 6px;text-align:center;border:2px solid #efe9fb;}
+.fig span{display:block;font-size:10px;font-weight:800;color:var(--ink-soft);letter-spacing:.5px;text-transform:uppercase;}
+.fig b{font-size:15px;font-weight:900;color:var(--ink);}
+.fig.profit b{color:var(--green-d);}
+.dc-actions{display:flex;gap:8px;margin-top:14px;}
+.dc-btn{flex:1;padding:12px;border-radius:14px;font-weight:800;font-size:15px;color:#fff;
+  font-family:'Baloo 2';box-shadow:0 4px 0 rgba(0,0,0,.15);transition:transform .07s;}
+.dc-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.15);}
+.dc-btn.primary{background:linear-gradient(180deg,var(--purple),var(--purple-d));}
+.dc-btn.go{background:linear-gradient(180deg,var(--green),var(--green-d));}
+.dc-btn.drop{flex:0 0 auto;width:48px;background:rgba(0,0,0,.06);color:var(--ink-soft);box-shadow:0 4px 0 rgba(0,0,0,.08);}
+
+/* ---------- Empty state ---------- */
+.empty-state{text-align:center;color:#fff;padding:50px 20px;opacity:.92;}
+.empty-emoji{font-size:60px;animation:bobBig 3s ease-in-out infinite;}
+.empty-state p{font-size:22px;font-weight:900;margin-top:10px;font-family:'Baloo 2';}
+.empty-state span{font-size:15px;opacity:.85;font-weight:700;}
+
+/* ---------- Hunt ---------- */
+.hunt-card{background:var(--card);border-radius:var(--r);padding:22px 18px;box-shadow:var(--shadow-sm);text-align:center;}
+.hunt-emoji{font-size:64px;animation:bobBig 3s ease-in-out infinite;}
+.hunt-emoji.searching{animation:shake .5s ease infinite;}
+@keyframes shake{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
+.hunt-desc{color:var(--ink-soft);font-weight:700;margin:8px 0 16px;font-size:15px;}
+.hunt-stats{display:flex;gap:8px;margin-bottom:18px;}
+.hunt-stats>div{flex:1;background:var(--card-2);border:2px solid #efe9fb;border-radius:14px;padding:10px 4px;}
+.hunt-stats span{display:block;font-size:11px;color:var(--ink-soft);font-weight:800;}
+.hunt-stats b{font-size:16px;color:var(--purple-d);font-weight:900;}
+
+/* ---------- Shop ---------- */
+.shop-list,.market-list{display:flex;flex-direction:column;gap:12px;}
+.shop-item{background:var(--card);border-radius:var(--r-sm);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);}
+.shop-emoji{font-size:38px;flex-shrink:0;}
+.shop-info{flex:1;min-width:0;}
+.shop-name{font-weight:900;font-size:16px;font-family:'Baloo 2';}
+.shop-desc{font-size:12px;color:var(--ink-soft);font-weight:700;line-height:1.3;margin-top:1px;}
+.shop-lvl{display:flex;gap:3px;margin-top:6px;}
+.pip{width:18px;height:6px;border-radius:3px;background:#e6e0f5;}
+.pip.on{background:linear-gradient(90deg,var(--purple),var(--pink));}
+.shop-buy{flex-shrink:0;padding:11px 14px;border-radius:14px;font-weight:900;font-size:14px;color:#fff;font-family:'Baloo 2';
+  background:linear-gradient(180deg,var(--gold),var(--gold-d));color:var(--ink);box-shadow:0 4px 0 var(--gold-d);text-align:center;min-width:84px;}
+.shop-buy:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gold-d);}
+.shop-buy.maxed{background:#e6e0f5;color:var(--ink-soft);box-shadow:0 4px 0 #cfc6e8;}
+.shop-buy.locked{background:#e6e0f5;color:var(--ink-soft);box-shadow:0 4px 0 #cfc6e8;}
+.shop-buy small{display:block;font-size:10px;font-weight:800;opacity:.7;}
+
+.market-item{background:var(--card);border-radius:var(--r-sm);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);}
+.market-item.active-mkt{border:3px solid var(--green);}
+.market-item.locked-mkt{opacity:.75;}
+
+/* ---------- Stats ---------- */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.stat-card{background:var(--card);border-radius:var(--r-sm);padding:16px;text-align:center;box-shadow:var(--shadow-sm);}
+.stat-card .s-ico{font-size:30px;}
+.stat-card .s-val{font-size:24px;font-weight:900;font-family:'Baloo 2';color:var(--purple-d);margin-top:4px;}
+.stat-card .s-lbl{font-size:12px;font-weight:800;color:var(--ink-soft);margin-top:2px;}
+#resetBtn{margin-top:20px;}
+
+/* ---------- Bottom nav ---------- */
+.nav{display:flex;background:rgba(255,255,255,.97);box-shadow:0 -6px 20px rgba(43,35,80,.2);
+  padding:8px 8px calc(8px + var(--safe-b));position:relative;z-index:3;border-top:3px solid #efe9fb;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border-radius:14px;
+  color:var(--ink-soft);font-weight:800;position:relative;transition:transform .1s;}
+.nav-btn .nav-ico{font-size:24px;filter:grayscale(.4);transition:filter .15s, transform .15s;}
+.nav-btn .nav-lbl{font-size:11px;}
+.nav-btn.active{color:var(--purple-d);}
+.nav-btn.active .nav-ico{filter:grayscale(0);transform:translateY(-2px) scale(1.12);}
+.nav-btn.active::after{content:"";position:absolute;bottom:0;width:26px;height:4px;border-radius:3px;
+  background:linear-gradient(90deg,var(--purple),var(--pink));}
+.nav-btn:active{transform:scale(.92);}
+.nav-badge{position:absolute;top:0;right:50%;margin-right:-26px;background:var(--red);color:#fff;font-size:11px;
+  font-weight:900;min-width:18px;height:18px;border-radius:10px;display:grid;place-items:center;padding:0 4px;
+  box-shadow:0 2px 6px rgba(255,94,87,.5);animation:popIn .3s both;}
+
+/* ---------- Deal modal (negotiation) ---------- */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(20,12,45,.72);backdrop-filter:blur(4px);
+  display:flex;align-items:flex-end;justify-content:center;padding:0;animation:fadeUp .25s ease;}
+.deal-modal{background:var(--card);border-radius:30px 30px 0 0;width:100%;max-width:480px;padding:22px 20px calc(26px + var(--safe-b));
+  box-shadow:0 -10px 40px rgba(0,0,0,.4);animation:slideUp .35s cubic-bezier(.2,1.1,.3,1) both;max-height:92vh;overflow:auto;}
+.dm-grab{width:44px;height:5px;border-radius:3px;background:#dcd5ef;margin:0 auto 16px;}
+.dm-head{display:flex;gap:14px;align-items:center;margin-bottom:6px;}
+.dm-emoji{font-size:52px;}
+.dm-title{font-size:22px;font-weight:900;font-family:'Baloo 2';line-height:1;}
+.dm-sub{font-size:13px;color:var(--ink-soft);font-weight:700;margin-top:3px;}
+.dm-section-label{font-size:12px;font-weight:900;letter-spacing:1px;color:var(--ink-soft);text-transform:uppercase;margin:18px 0 8px;}
+.dm-figs{display:flex;gap:8px;}
+.dm-fig{flex:1;background:var(--card-2);border:2px solid #efe9fb;border-radius:14px;padding:10px 6px;text-align:center;}
+.dm-fig span{display:block;font-size:10px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;}
+.dm-fig b{font-size:17px;font-weight:900;}
+.dm-fig.hl{background:#f3eeff;border-color:var(--purple);}
+.dm-fig.hl b{color:var(--purple-d);}
+.mao-banner{margin-top:14px;background:linear-gradient(135deg,#fff7df,#ffeec2);border:2px dashed var(--gold-d);
+  border-radius:16px;padding:12px 14px;font-weight:800;font-size:14px;text-align:center;}
+.mao-banner b{color:var(--gold-d);font-size:18px;}
+.offer-opts{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+.offer-opt{display:flex;align-items:center;gap:12px;background:var(--card-2);border:2px solid #efe9fb;border-radius:16px;
+  padding:12px 14px;text-align:left;transition:transform .07s;width:100%;}
+.offer-opt:active{transform:scale(.98);}
+.offer-opt .oo-emoji{font-size:30px;}
+.offer-opt .oo-main{flex:1;}
+.offer-opt .oo-name{font-weight:900;font-size:16px;font-family:'Baloo 2';}
+.offer-opt .oo-desc{font-size:12px;color:var(--ink-soft);font-weight:700;}
+.offer-opt .oo-right{text-align:right;}
+.offer-opt .oo-price{font-weight:900;font-size:16px;}
+.offer-opt .oo-odds{font-size:11px;font-weight:800;}
+.odds-hi{color:var(--green-d);}.odds-mid{color:var(--gold-d);}.odds-lo{color:var(--red);}
+.dm-close{margin-top:16px;}
+.dm-profit-big{text-align:center;margin:10px 0;}
+.dm-profit-big .pb-num{font-size:46px;font-weight:900;font-family:'Baloo 2';color:var(--green-d);
+  text-shadow:0 3px 0 rgba(31,174,125,.2);}
+.dm-profit-big .pb-lbl{font-weight:800;color:var(--ink-soft);}
+.buyer-list{display:flex;flex-direction:column;gap:10px;}
+
+/* negotiation result animation */
+.nego-anim{text-align:center;padding:30px 10px;}
+.nego-anim .na-emoji{font-size:70px;animation:bobBig 1s ease infinite;}
+.nego-anim .na-text{font-size:24px;font-weight:900;font-family:'Baloo 2';margin-top:10px;}
+
+/* ---------- Toasts ---------- */
+.toast-wrap{position:fixed;top:calc(8px + var(--safe-t));left:0;right:0;z-index:80;display:flex;flex-direction:column;
+  align-items:center;gap:8px;pointer-events:none;padding:0 16px;}
+.toast{background:#fff;border-radius:16px;padding:11px 16px;font-weight:800;font-size:14px;box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;gap:8px;max-width:380px;animation:toastIn .4s cubic-bezier(.2,1.3,.4,1) both;border-left:6px solid var(--purple);}
+.toast.good{border-left-color:var(--green);}
+.toast.bad{border-left-color:var(--red);}
+.toast.gold{border-left-color:var(--gold-d);background:linear-gradient(135deg,#fffdf5,#fff6d9);}
+.toast .t-emoji{font-size:22px;}
+@keyframes toastIn{from{transform:translateY(-30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.toast.out{animation:toastOut .35s ease forwards;}
+@keyframes toastOut{to{transform:translateY(-20px) scale(.9);opacity:0;}}
+
+/* ---------- Confetti ---------- */
+.confetti{position:fixed;inset:0;z-index:70;pointer-events:none;}
+
+/* ---------- Keyframes ---------- */
+@keyframes popIn{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes fadeUp{from{transform:translateY(12px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+@keyframes cardIn{from{transform:translateY(20px) scale(.96);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+@keyframes flash{0%{background:#fff;}50%{background:#d8f8ec;}100%{background:#fff;}}
+.flash{animation:flash .6s ease;}
+
+/* ---------- Small screens tuning ---------- */
+@media(max-height:680px){
+  .logo-emoji{font-size:60px;}
+  .cash{font-size:30px;}
+  .hunt-emoji{font-size:52px;}
+}
+@media(min-width:520px){
+  .content{max-width:480px;margin:0 auto;width:100%;}
+  .hud{max-width:480px;margin:0 auto;width:100%;}
+  .nav{max-width:480px;margin:0 auto;width:100%;border-radius:20px 20px 0 0;}
+}
+
+</style>
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg-blob b1"></div>
+    <div class="bg-blob b2"></div>
+    <div class="bg-blob b3"></div>
+    <div class="skyline"></div>
+    <div class="floaties" id="floaties"></div>
+  </div>
+
+  <!-- ===== Splash / Title ===== -->
+  <section class="screen splash" id="splash">
+    <div class="splash-inner">
+      <div class="logo-emoji">🏘️</div>
+      <h1 class="game-title">FLIP<span>TYCOON</span></h1>
+      <p class="tagline">Build your wholesaling empire — one deal at a time.</p>
+      <button class="btn btn-play" id="playBtn">▶ PLAY</button>
+      <button class="btn btn-ghost" id="howBtn">How to Play</button>
+      <button class="btn btn-ghost btn-danger-ghost hidden" id="continueWipe">New Game (wipe save)</button>
+      <p class="credit">A cartoon real-estate tycoon game</p>
+    </div>
+  </section>
+
+  <!-- ===== How To Play ===== -->
+  <section class="screen modal-screen hidden" id="howScreen">
+    <div class="sheet">
+      <h2>📚 How to Wholesale</h2>
+      <ol class="how-list">
+        <li><b>🔍 Hunt</b> for motivated sellers to find property leads.</li>
+        <li><b>🧮 Analyze</b> each deal. The <i>70% Rule</i> says your max offer = <b>70% of the After-Repair Value</b> minus repair costs.</li>
+        <li><b>🤝 Negotiate</b> a contract <i>below</i> your max offer — the gap is your profit.</li>
+        <li><b>💸 Assign</b> the contract to a cash buyer and collect your wholesale fee (usually $10k–$15k!).</li>
+        <li><b>📈 Reinvest</b> in upgrades, unlock pricier markets, and climb the ranks.</li>
+      </ol>
+      <p class="tip">💡 You never buy the house — you flip the <i>contract</i>. Low risk, fast cash!</p>
+      <button class="btn btn-play" id="howClose">Got it!</button>
+    </div>
+  </section>
+
+  <!-- ===== Main Game ===== -->
+  <main class="screen game hidden" id="game">
+    <!-- Top HUD -->
+    <header class="hud">
+      <div class="hud-row">
+        <div class="cash-wrap">
+          <div class="cash-label">CASH</div>
+          <div class="cash" id="cash">$0</div>
+        </div>
+        <div class="hud-right">
+          <div class="rank-pill" id="rankPill">
+            <span class="rank-icon" id="rankIcon">🥉</span>
+            <span class="rank-name" id="rankName">Rookie</span>
+          </div>
+          <button class="icon-btn" id="muteBtn" title="Sound">🔊</button>
+        </div>
+      </div>
+      <div class="hud-row meta">
+        <div class="meta-chip"><span>📅 Day</span><b id="day">1</b></div>
+        <div class="meta-chip energy"><span>⚡ Energy</span><b id="energy">5</b><b class="muted">/<span id="maxEnergy">5</span></b></div>
+        <div class="meta-chip"><span>🏆 Deals</span><b id="dealsClosed">0</b></div>
+      </div>
+      <div class="goal-bar" id="goalBar" title="Net worth to next rank">
+        <div class="goal-fill" id="goalFill"></div>
+        <div class="goal-text" id="goalText">Next rank: $50k</div>
+      </div>
+    </header>
+
+    <!-- Tab content -->
+    <div class="content" id="content">
+
+      <!-- DEALS TAB -->
+      <section class="tab" id="tab-deals">
+        <div class="tab-head">
+          <h2>📂 Active Pipeline</h2>
+          <span class="market-badge" id="marketBadge">🏡 Suburbs</span>
+        </div>
+        <div class="deal-list" id="dealList"></div>
+        <div class="empty-state" id="emptyDeals">
+          <div class="empty-emoji">🕵️</div>
+          <p>No leads yet!</p>
+          <span>Tap <b>Hunt</b> to find motivated sellers.</span>
+        </div>
+      </section>
+
+      <!-- HUNT TAB -->
+      <section class="tab hidden" id="tab-hunt">
+        <div class="tab-head"><h2>🔍 Lead Generation</h2></div>
+        <div class="hunt-card">
+          <div class="hunt-emoji" id="huntEmoji">🏚️</div>
+          <p class="hunt-desc">Send out marketing to drum up motivated sellers. Better marketing finds better deals.</p>
+          <div class="hunt-stats">
+            <div><span>Leads / hunt</span><b id="leadsPerHunt">1–2</b></div>
+            <div><span>Energy cost</span><b>⚡ 1</b></div>
+            <div><span>Marketing</span><b id="mktLevel">Flyers</b></div>
+          </div>
+          <button class="btn btn-hunt" id="huntBtn">🔍 HUNT FOR DEALS</button>
+          <button class="btn btn-ghost" id="sleepBtn">🌙 End Day (rest &amp; refill energy)</button>
+        </div>
+      </section>
+
+      <!-- UPGRADES TAB -->
+      <section class="tab hidden" id="tab-shop">
+        <div class="tab-head"><h2>🛠️ Upgrades</h2></div>
+        <div class="shop-list" id="shopList"></div>
+        <div class="tab-head" style="margin-top:18px"><h2>🌆 Markets</h2></div>
+        <div class="market-list" id="marketList"></div>
+      </section>
+
+      <!-- STATS TAB -->
+      <section class="tab hidden" id="tab-stats">
+        <div class="tab-head"><h2>📊 Career Stats</h2></div>
+        <div class="stat-grid" id="statGrid"></div>
+        <button class="btn btn-ghost btn-danger-ghost" id="resetBtn">🗑️ Reset Career</button>
+      </section>
+
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="nav">
+      <button class="nav-btn active" data-tab="deals"><span class="nav-ico">📂</span><span class="nav-lbl">Deals</span><span class="nav-badge hidden" id="navBadge">0</span></button>
+      <button class="nav-btn" data-tab="hunt"><span class="nav-ico">🔍</span><span class="nav-lbl">Hunt</span></button>
+      <button class="nav-btn" data-tab="shop"><span class="nav-ico">🛠️</span><span class="nav-lbl">Shop</span></button>
+      <button class="nav-btn" data-tab="stats"><span class="nav-ico">📊</span><span class="nav-lbl">Stats</span></button>
+    </nav>
+  </main>
+
+  <!-- ===== Deal Modal ===== -->
+  <div class="overlay hidden" id="dealOverlay">
+    <div class="deal-modal" id="dealModal"></div>
+  </div>
+
+  <!-- ===== Toast + FX ===== -->
+  <div class="toast-wrap" id="toastWrap"></div>
+  <canvas class="confetti" id="confetti"></canvas>
+
+  <script>
+/* ============================================================
+   FLIP TYCOON — Wholesale Empire
+   A cartoon real-estate wholesaling tycoon game.
+   All state in one object, saved to localStorage.
+   ============================================================ */
+(() => {
+'use strict';
+
+const SAVE_KEY = 'fliptycoon_v1';
+const $ = id => document.getElementById(id);
+const rand = (a, b) => Math.random() * (b - a) + a;
+const randInt = (a, b) => Math.floor(rand(a, b + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmt$ = n => '$' + Math.round(n).toLocaleString('en-US');
+const fmtK = n => n >= 1000 ? '$' + (n / 1000).toFixed(n >= 100000 ? 0 : 1).replace('.0', '') + 'k' : fmt$(n);
+
+/* ---------- Config: markets, upgrades, ranks ---------- */
+const MARKETS = [
+  { id:'suburbs', name:'Suburbs',   icon:'🏡', cost:0,       arv:[140000,260000], color:'#36d39a' },
+  { id:'city',    name:'City Blocks',icon:'🏘️', cost:75000,  arv:[260000,460000], color:'#36c5f0' },
+  { id:'metro',   name:'Metro High-Rise',icon:'🏢', cost:400000, arv:[480000,820000], color:'#7b5cff' },
+  { id:'luxury',  name:'Luxury Coast',icon:'🌴', cost:1500000,arv:[900000,1800000],color:'#ff5d8f' },
+];
+
+const UPGRADES = {
+  marketing:  { emoji:'📣', name:'Marketing Reach', max:5,
+    desc:['Flyers','Postcards','Cold Calls','Bandit Signs','PPC Ads','Full Funnel'],
+    descLine:'More & better leads per hunt',
+    cost:[0, 4000, 12000, 30000, 70000, 150000] },
+  negotiation:{ emoji:'🧠', name:'Negotiation Skill', max:5,
+    desc:['Newbie','Smooth Talker','Closer','Persuader','Shark','Mastermind'],
+    descLine:'Higher accept odds & lower buy price',
+    cost:[0, 5000, 14000, 35000, 80000, 175000] },
+  network:    { emoji:'🤝', name:'Buyer Network', max:5,
+    desc:['1 Buyer','Small List','Buyer Pool','Investor Club','Hedge Funds','Nationwide'],
+    descLine:'Bigger assignment fees from buyers',
+    cost:[0, 6000, 16000, 40000, 90000, 200000] },
+  energy:     { emoji:'⚡', name:'Hustle Stamina', max:5,
+    desc:['5 / day','7 / day','9 / day','12 / day','15 / day','20 / day'],
+    descLine:'More energy (actions) each day',
+    cost:[0, 5000, 13000, 32000, 75000, 160000] },
+};
+const ENERGY_BY_LVL = [5, 7, 9, 12, 15, 20];
+
+const RANKS = [
+  { icon:'🥉', name:'Rookie',     at:0 },
+  { icon:'🥈', name:'Dealer',     at:50000 },
+  { icon:'🥇', name:'Closer',     at:150000 },
+  { icon:'💎', name:'Investor',   at:400000 },
+  { icon:'👑', name:'Mogul',      at:1000000 },
+  { icon:'🏆', name:'Tycoon',     at:3000000 },
+  { icon:'🚀', name:'Legend',     at:8000000 },
+];
+
+const STREETS = ['Maple','Oak','Pine','Sunset','Birch','Cedar','Willow','Elm','Aspen','Magnolia',
+  'Riverside','Hillcrest','Park','Lakeview','Meadow','Bramble','Cherry','Walnut','Juniper','Harbor',
+  'Crescent','Dogwood','Foxglove','Sycamore','Chestnut','Marigold','Briar','Cobblestone'];
+const SUFFIX = ['St','Ave','Dr','Ln','Ct','Rd','Way','Blvd','Pl','Terr'];
+const HOUSE_EMOJIS = ['🏠','🏡','🏚️','🏘️','🏢','🏬'];
+const CONDITIONS = [
+  { name:'Hoarder House', emoji:'🏚️', repairPct:[0.14,0.22] },
+  { name:'Fixer-Upper',   emoji:'🏚️', repairPct:[0.10,0.16] },
+  { name:'Tired Rental',  emoji:'🏠', repairPct:[0.07,0.12] },
+  { name:'Cosmetic Reno', emoji:'🏡', repairPct:[0.04,0.08] },
+  { name:'Move-in Ready', emoji:'🏡', repairPct:[0.02,0.05] },
+  { name:'Storm Damaged', emoji:'🏚️', repairPct:[0.12,0.20] },
+  { name:'Estate Sale',   emoji:'🏘️', repairPct:[0.06,0.13] },
+];
+const SELLER_REASONS = ['Job relocation','Inherited the property','Going through divorce','Facing foreclosure',
+  'Tired landlord','Downsizing','Behind on taxes','Moving for retirement','Vacant & costly'];
+
+/* ---------- Default state ---------- */
+function freshState(){
+  return {
+    cash: 2000,
+    day: 1,
+    energy: 5,
+    deals: [],
+    dealSeq: 1,
+    upgrades: { marketing:0, negotiation:0, network:0, energy:0 },
+    marketsUnlocked: ['suburbs'],
+    activeMarket: 'suburbs',
+    stats: { dealsClosed:0, totalEarned:0, biggest:0, fellThrough:0, daysPlayed:1, leadsFound:0 },
+    sound: true,
+    seenHow: false,
+  };
+}
+let S = load() || freshState();
+
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ const r = localStorage.getItem(SAVE_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+
+/* ---------- Sound (tiny WebAudio blips) ---------- */
+let actx = null;
+function beep(freq, dur=0.08, type='sine', vol=0.12){
+  if(!S.sound) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = vol;
+    o.connect(g); g.connect(actx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + dur);
+    o.stop(actx.currentTime + dur + 0.02);
+  }catch(e){}
+}
+const sfx = {
+  tap:   () => beep(440, .05, 'square', .06),
+  hunt:  () => { beep(330,.08,'sawtooth',.08); setTimeout(()=>beep(440,.08,'sawtooth',.08),90); },
+  found: () => { beep(523,.09,'triangle'); setTimeout(()=>beep(784,.12,'triangle'),100); },
+  cash:  () => { beep(660,.07,'square',.09); setTimeout(()=>beep(880,.07,'square',.09),70); setTimeout(()=>beep(1175,.14,'square',.09),140); },
+  fail:  () => { beep(220,.18,'sawtooth',.1); },
+  buy:   () => { beep(587,.06,'square',.08); setTimeout(()=>beep(880,.1,'square',.08),60); },
+  level: () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.12,'triangle',.1),i*90)); },
+};
+
+/* ============================================================
+   DEAL GENERATION
+   ============================================================ */
+function genDeal(){
+  const mkt = MARKETS.find(m => m.id === S.activeMarket);
+  const cond = pick(CONDITIONS);
+  // Better marketing nudges toward bigger ARVs & more motivated sellers
+  const mLvl = S.upgrades.marketing;
+  const arv = Math.round(rand(mkt.arv[0], mkt.arv[1]) * (1 + mLvl*0.02) / 1000) * 1000;
+  const repairs = Math.round(arv * rand(cond.repairPct[0], cond.repairPct[1]) / 500) * 500;
+  // Max Allowable Offer (the wholesaler's golden 70% rule)
+  const mao = Math.round((arv * 0.70 - repairs) / 500) * 500;
+  // Motivation 1..5 — higher marketing finds hotter leads
+  const motivation = clamp(randInt(1, 4) + (Math.random() < mLvl*0.12 ? 1 : 0), 1, 5);
+  // Seller asking: hot sellers list near/under MAO; cold sellers want more
+  const askMult = motivation >= 4 ? rand(0.92, 1.04)
+                : motivation === 3 ? rand(1.0, 1.12)
+                : rand(1.08, 1.25);
+  const asking = Math.round(mao * askMult / 500) * 500;
+  return {
+    id: S.dealSeq++,
+    addr: `${randInt(100,9899)} ${pick(STREETS)} ${pick(SUFFIX)}`,
+    emoji: cond.emoji,
+    cond: cond.name,
+    reason: pick(SELLER_REASONS),
+    arv, repairs, mao, asking, motivation,
+    stage: 'lead',        // lead -> contracted
+    contractPrice: 0,
+  };
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+let displayCash = S.cash;
+
+function renderAll(){
+  renderHUD();
+  renderDeals();
+  renderShop();
+  renderMarkets();
+  renderStats();
+  renderHuntStats();
+}
+
+function currentRank(){
+  let r = RANKS[0];
+  for(const rk of RANKS) if(S.stats.totalEarned + S.cash >= rk.at) r = rk;
+  return r;
+}
+function nextRank(){
+  const nw = S.stats.totalEarned + S.cash;
+  return RANKS.find(rk => rk.at > nw) || null;
+}
+
+function renderHUD(){
+  // animated cash count-up
+  animateCash();
+  $('day').textContent = S.day;
+  const maxE = ENERGY_BY_LVL[S.upgrades.energy];
+  $('energy').textContent = S.energy;
+  $('maxEnergy').textContent = maxE;
+  $('energy').parentElement.classList.toggle('low', S.energy <= 1);
+  $('dealsClosed').textContent = S.stats.dealsClosed;
+
+  const rk = currentRank();
+  $('rankIcon').textContent = rk.icon;
+  $('rankName').textContent = rk.name;
+
+  const nr = nextRank();
+  const nw = S.stats.totalEarned + S.cash;
+  if(nr){
+    const prev = rk.at;
+    const pct = clamp((nw - prev) / (nr.at - prev) * 100, 0, 100);
+    $('goalFill').style.width = pct + '%';
+    $('goalText').textContent = `${rk.name} → ${nr.name}: ${fmtK(nr.at - nw)} to go`;
+  } else {
+    $('goalFill').style.width = '100%';
+    $('goalText').textContent = '👑 MAX RANK — Legendary Tycoon!';
+  }
+
+  // nav badge = active leads needing action
+  const open = S.deals.length;
+  const badge = $('navBadge');
+  if(open > 0){ badge.classList.remove('hidden'); badge.textContent = open; }
+  else badge.classList.add('hidden');
+
+  $('muteBtn').textContent = S.sound ? '🔊' : '🔇';
+  $('marketBadge').textContent = `${MARKETS.find(m=>m.id===S.activeMarket).icon} ${MARKETS.find(m=>m.id===S.activeMarket).name}`;
+}
+
+function animateCash(){
+  const el = $('cash');
+  const target = S.cash;
+  const start = displayCash;
+  if(start === target){ el.textContent = fmt$(target); return; }
+  const t0 = performance.now(), dur = 600, diff = target - start;
+  function step(t){
+    const k = clamp((t - t0)/dur, 0, 1);
+    const eased = 1 - Math.pow(1 - k, 3);
+    displayCash = start + diff * eased;
+    el.textContent = fmt$(displayCash);
+    if(k < 1) requestAnimationFrame(step);
+    else { displayCash = target; el.textContent = fmt$(target); }
+  }
+  requestAnimationFrame(step);
+}
+
+function motivationTag(m){
+  if(m >= 4) return { cls:'tag-hot', txt:'🔥 Motivated' };
+  if(m === 3) return { cls:'tag-warm', txt:'😐 Curious' };
+  return { cls:'tag-cold', txt:'🧊 Cold' };
+}
+
+function renderDeals(){
+  const list = $('dealList');
+  const empty = $('emptyDeals');
+  list.innerHTML = '';
+  if(S.deals.length === 0){ empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  S.deals.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'deal-card' + (d.stage === 'contracted' ? ' contracted' : '');
+    const tag = motivationTag(d.motivation);
+
+    if(d.stage === 'lead'){
+      card.innerHTML = `
+        <div class="dc-top">
+          <div class="dc-emoji">${d.emoji}</div>
+          <div class="dc-info">
+            <div class="dc-addr">${d.addr}</div>
+            <div class="dc-sub">${d.cond} · ${d.reason}</div>
+            <span class="dc-tag ${tag.cls}">${tag.txt}</span>
+          </div>
+        </div>
+        <div class="dc-figures">
+          <div class="fig"><span>ARV</span><b>${fmtK(d.arv)}</b></div>
+          <div class="fig"><span>Repairs</span><b>${fmtK(d.repairs)}</b></div>
+          <div class="fig"><span>Asking</span><b>${fmtK(d.asking)}</b></div>
+        </div>
+        <div class="dc-actions">
+          <button class="dc-btn primary" data-act="negotiate" data-id="${d.id}">🤝 Make Offer</button>
+          <button class="dc-btn drop" data-act="drop" data-id="${d.id}" title="Pass on this lead">✕</button>
+        </div>`;
+    } else {
+      const fee = assignmentFee(d);
+      card.innerHTML = `
+        <div class="dc-status">📑 Under Contract</div>
+        <div class="dc-top">
+          <div class="dc-emoji">${d.emoji}</div>
+          <div class="dc-info">
+            <div class="dc-addr">${d.addr}</div>
+            <div class="dc-sub">${d.cond}</div>
+            <span class="dc-tag tag-contract">Locked at ${fmtK(d.contractPrice)}</span>
+          </div>
+        </div>
+        <div class="dc-figures">
+          <div class="fig"><span>ARV</span><b>${fmtK(d.arv)}</b></div>
+          <div class="fig"><span>Your Cost</span><b>${fmtK(d.contractPrice)}</b></div>
+          <div class="fig profit"><span>Est. Fee</span><b>${fmtK(fee)}</b></div>
+        </div>
+        <div class="dc-actions">
+          <button class="dc-btn go" data-act="assign" data-id="${d.id}">💸 Find Cash Buyer</button>
+        </div>`;
+    }
+    list.appendChild(card);
+  });
+}
+
+function renderHuntStats(){
+  const mLvl = S.upgrades.marketing;
+  $('leadsPerHunt').textContent = `${1 + Math.floor(mLvl/2)}–${2 + mLvl}`;
+  $('mktLevel').textContent = UPGRADES.marketing.desc[mLvl];
+}
+
+function renderShop(){
+  const list = $('shopList');
+  list.innerHTML = '';
+  for(const key of Object.keys(UPGRADES)){
+    const u = UPGRADES[key];
+    const lvl = S.upgrades[key];
+    const maxed = lvl >= u.max;
+    const cost = maxed ? null : u.cost[lvl+1];
+    const canAfford = !maxed && S.cash >= cost;
+    const pips = Array.from({length:u.max}, (_,i)=>`<div class="pip ${i<lvl?'on':''}"></div>`).join('');
+    const item = document.createElement('div');
+    item.className = 'shop-item';
+    item.innerHTML = `
+      <div class="shop-emoji">${u.emoji}</div>
+      <div class="shop-info">
+        <div class="shop-name">${u.name}</div>
+        <div class="shop-desc">${u.descLine} · <b>${u.desc[lvl]}</b></div>
+        <div class="shop-lvl">${pips}</div>
+      </div>
+      <button class="shop-buy ${maxed?'maxed':canAfford?'':'locked'}" data-up="${key}" ${maxed||!canAfford?'disabled':''}>
+        ${maxed ? 'MAX' : `${fmtK(cost)}<small>upgrade</small>`}
+      </button>`;
+    list.appendChild(item);
+  }
+}
+
+function renderMarkets(){
+  const list = $('marketList');
+  list.innerHTML = '';
+  MARKETS.forEach(m => {
+    const unlocked = S.marketsUnlocked.includes(m.id);
+    const active = S.activeMarket === m.id;
+    const item = document.createElement('div');
+    item.className = 'market-item' + (active?' active-mkt':'') + (!unlocked?' locked-mkt':'');
+    let btn;
+    if(active) btn = `<button class="shop-buy maxed" disabled>ACTIVE</button>`;
+    else if(unlocked) btn = `<button class="shop-buy" data-mkt="${m.id}">SWITCH</button>`;
+    else {
+      const can = S.cash >= m.cost;
+      btn = `<button class="shop-buy ${can?'':'locked'}" data-mkt-buy="${m.id}" ${can?'':'disabled'}>${fmtK(m.cost)}<small>unlock</small></button>`;
+    }
+    item.innerHTML = `
+      <div class="shop-emoji">${m.icon}</div>
+      <div class="shop-info">
+        <div class="shop-name">${m.name}</div>
+        <div class="shop-desc">Home values ${fmtK(m.arv[0])}–${fmtK(m.arv[1])}</div>
+      </div>
+      ${btn}`;
+    list.appendChild(item);
+  });
+}
+
+function renderStats(){
+  const g = $('statGrid');
+  const st = S.stats;
+  const avg = st.dealsClosed ? st.totalEarned/st.dealsClosed : 0;
+  const cells = [
+    ['💰', fmtK(st.totalEarned), 'Total Earned'],
+    ['🏆', st.dealsClosed, 'Deals Closed'],
+    ['📈', fmtK(st.biggest), 'Biggest Deal'],
+    ['⚖️', fmtK(avg), 'Avg / Deal'],
+    ['🔍', st.leadsFound, 'Leads Found'],
+    ['📅', st.daysPlayed, 'Days Hustled'],
+  ];
+  g.innerHTML = cells.map(c => `
+    <div class="stat-card"><div class="s-ico">${c[0]}</div><div class="s-val">${c[1]}</div><div class="s-lbl">${c[2]}</div></div>`).join('');
+}
+
+/* ============================================================
+   ECONOMICS
+   ============================================================ */
+// Assignment fee a cash buyer will pay = spread under MAO + network premium.
+function assignmentFee(d){
+  const nLvl = S.upgrades.network;
+  const spread = d.mao - d.contractPrice;          // base profit from the 70% rule gap
+  const premium = d.mao * (0.03 + nLvl * 0.012);   // buyer competition premium
+  let fee = spread + premium;
+  return Math.max(1500, Math.round(fee / 100) * 100);
+}
+
+/* ============================================================
+   GAME ACTIONS
+   ============================================================ */
+function spendEnergy(n=1){ S.energy = Math.max(0, S.energy - n); }
+
+function doHunt(){
+  if(S.energy < 1){ toast('😴','Out of energy! End the day to refill.','bad'); sfx.fail(); return; }
+  sfx.hunt();
+  const emoji = $('huntEmoji');
+  emoji.classList.add('searching');
+  $('huntBtn').disabled = true;
+
+  setTimeout(() => {
+    emoji.classList.remove('searching');
+    $('huntBtn').disabled = false;
+    spendEnergy(1);
+    const mLvl = S.upgrades.marketing;
+    const count = randInt(1 + Math.floor(mLvl/2), 2 + mLvl);
+    let added = 0;
+    for(let i=0;i<count;i++){
+      if(S.deals.length >= 8) break; // pipeline cap
+      S.deals.push(genDeal());
+      added++;
+    }
+    S.stats.leadsFound += added;
+    sfx.found();
+    emoji.textContent = pick(HOUSE_EMOJIS);
+    if(added === 0) toast('📭','Pipeline full! Work your existing leads.','bad');
+    else toast('📬', `Found ${added} new lead${added>1?'s':''}!`, 'good');
+    maybeRandomEvent();
+    save(); renderAll();
+    switchTab('deals');
+  }, 650);
+}
+
+function endDay(){
+  S.day++;
+  S.stats.daysPlayed++;
+  S.energy = ENERGY_BY_LVL[S.upgrades.energy];
+  // leads naturally age out a bit — a cold lead may vanish overnight
+  const before = S.deals.length;
+  S.deals = S.deals.filter(d => d.stage === 'contracted' || d.motivation >= 2 || Math.random() > 0.5);
+  const lost = before - S.deals.length;
+  sfx.tap();
+  toast('🌅', `Day ${S.day} — energy refilled!`, 'good');
+  if(lost > 0) setTimeout(()=>toast('🍃', `${lost} cold lead${lost>1?'s':''} went stale.`, 'bad'), 400);
+  save(); renderAll();
+}
+
+/* ---------- Negotiation modal ---------- */
+let activeDealId = null;
+
+function openNegotiate(id){
+  const d = S.deals.find(x => x.id === id);
+  if(!d) return;
+  activeDealId = id;
+  sfx.tap();
+  const goodDeal = d.mao > d.asking;
+  const m = $('dealModal');
+
+  const offers = buildOffers(d);
+  const oHtml = offers.map((o,i) => `
+    <button class="offer-opt" data-offer="${i}">
+      <div class="oo-emoji">${o.emoji}</div>
+      <div class="oo-main">
+        <div class="oo-name">${o.name}</div>
+        <div class="oo-desc">${o.desc}</div>
+      </div>
+      <div class="oo-right">
+        <div class="oo-price">${fmtK(o.price)}</div>
+        <div class="oo-odds ${o.oddsCls}">${o.oddsTxt}</div>
+      </div>
+    </button>`).join('');
+
+  m.innerHTML = `
+    <div class="dm-grab"></div>
+    <div class="dm-head">
+      <div class="dm-emoji">${d.emoji}</div>
+      <div>
+        <div class="dm-title">${d.addr}</div>
+        <div class="dm-sub">${d.cond} · Seller: ${d.reason}</div>
+      </div>
+    </div>
+    <div class="dm-section-label">📊 The Numbers</div>
+    <div class="dm-figs">
+      <div class="dm-fig"><span>After-Repair Value</span><b>${fmt$(d.arv)}</b></div>
+      <div class="dm-fig"><span>Est. Repairs</span><b>${fmt$(d.repairs)}</b></div>
+    </div>
+    <div class="dm-figs" style="margin-top:8px">
+      <div class="dm-fig"><span>Seller Asking</span><b>${fmt$(d.asking)}</b></div>
+      <div class="dm-fig hl"><span>Max Offer (70% rule)</span><b>${fmt$(d.mao)}</b></div>
+    </div>
+    <div class="mao-banner">
+      🎯 Stay at or below <b>${fmt$(d.mao)}</b> to lock in a profit.
+      ${goodDeal ? 'This seller is priced to move!' : 'Seller wants over your max — negotiate hard!'}
+    </div>
+    <div class="dm-section-label">🤝 Choose Your Offer</div>
+    <div class="offer-opts">${oHtml}</div>
+    <button class="btn btn-ghost dm-close" data-close="1" style="color:var(--ink-soft);border-color:#e0d9f2">Walk Away</button>`;
+
+  m.querySelectorAll('[data-offer]').forEach(b =>
+    b.addEventListener('click', () => makeOffer(d, offers[+b.dataset.offer])));
+  m.querySelector('[data-close]').addEventListener('click', closeModal);
+  $('dealOverlay').classList.remove('hidden');
+}
+
+function buildOffers(d){
+  const nLvl = S.upgrades.negotiation;
+  const skillBonus = nLvl * 0.06; // each skill level adds accept odds
+  // Three strategies relative to asking price
+  const defs = [
+    { name:'Lowball', emoji:'😈', mult:0.80, base:0.30, desc:'Big spread, risky' },
+    { name:'Fair Offer', emoji:'😊', mult:0.90, base:0.58, desc:'Balanced & solid' },
+    { name:'Generous', emoji:'🤲', mult:0.99, base:0.85, desc:'Likely yes, slim margin' },
+  ];
+  return defs.map(o => {
+    const price = Math.round(d.asking * o.mult / 500) * 500;
+    // motivation raises odds, price above MAO lowers buyer interest but that's later
+    let odds = clamp(o.base + skillBonus + (d.motivation-3)*0.08, 0.08, 0.97);
+    const oddsTxt = `${Math.round(odds*100)}% accept`;
+    const oddsCls = odds >= 0.7 ? 'odds-hi' : odds >= 0.4 ? 'odds-mid' : 'odds-lo';
+    return { ...o, price, odds, oddsTxt, oddsCls };
+  });
+}
+
+function makeOffer(d, offer){
+  if(S.energy < 1){ toast('😴','No energy to negotiate. Rest first!','bad'); sfx.fail(); closeModal(); return; }
+  spendEnergy(1);
+  const m = $('dealModal');
+  // suspense animation
+  m.innerHTML = `<div class="dm-grab"></div>
+    <div class="nego-anim"><div class="na-emoji">🤔</div><div class="na-text">Calling the seller…</div></div>`;
+  const win = Math.random() < offer.odds;
+
+  setTimeout(() => {
+    if(win){
+      d.stage = 'contracted';
+      d.contractPrice = offer.price;
+      sfx.found();
+      const fee = assignmentFee(d);
+      m.innerHTML = `<div class="dm-grab"></div>
+        <div class="nego-anim"><div class="na-emoji">📑</div>
+        <div class="na-text" style="color:var(--green-d)">Under Contract!</div>
+        <p style="font-weight:800;color:var(--ink-soft);margin-top:6px">Locked at ${fmt$(offer.price)} · est. fee ${fmtK(fee)}</p></div>
+        <button class="btn btn-hunt" data-close2="1">💸 Now Find a Buyer →</button>`;
+      m.querySelector('[data-close2]').addEventListener('click', () => { closeModal(); switchTab('deals'); });
+      toast('🤝', `Contract signed on ${d.addr.split(' ').slice(1).join(' ')}!`, 'good');
+    } else {
+      sfx.fail();
+      m.innerHTML = `<div class="dm-grab"></div>
+        <div class="nego-anim"><div class="na-emoji">🙅</div>
+        <div class="na-text" style="color:var(--red)">Seller declined.</div>
+        <p style="font-weight:800;color:var(--ink-soft);margin-top:6px">${pick(['"I need more than that."','"Let me think about it..."','"Another investor offered more."','"Come back with a better number."'])}</p></div>
+        <button class="btn btn-ghost" data-retry="1" style="border-color:#e0d9f2;color:var(--ink)">Try Another Offer</button>
+        <button class="btn btn-ghost" data-close="1" style="border-color:#e0d9f2;color:var(--ink-soft)">Walk Away</button>`;
+      m.querySelector('[data-retry]').addEventListener('click', () => openNegotiate(d.id));
+      m.querySelector('[data-close]').addEventListener('click', closeModal);
+      toast('🙅','Offer rejected — try again or pass.','bad');
+    }
+    save(); renderAll();
+  }, 900);
+}
+
+/* ---------- Assign to buyer ---------- */
+function openAssign(id){
+  const d = S.deals.find(x => x.id === id);
+  if(!d || d.stage !== 'contracted') return;
+  sfx.tap();
+  const baseFee = assignmentFee(d);
+  const nLvl = S.upgrades.network;
+  // generate 2-3 buyer offers around the base fee
+  const nBuyers = clamp(2 + Math.floor(nLvl/2), 2, 4);
+  const buyers = [];
+  const BNAMES = [['🏦','Equity Partners'],['👔','J. Caldwell','flip investor'],['🏗️','BuildRight LLC'],
+    ['💼','Sona Capital'],['🛠️','FixFast Homes'],['🏠','Hometown Holdings'],['📊','Vertex Group']];
+  const used = new Set();
+  for(let i=0;i<nBuyers;i++){
+    let b; do { b = pick(BNAMES); } while(used.has(b[1])); used.add(b[1]);
+    const variance = rand(0.82, 1.18) + (i===0?0.05:0);
+    const fee = Math.max(1500, Math.round(baseFee * variance / 100) * 100);
+    buyers.push({ emoji:b[0], name:b[1], fee, fast: Math.random()<0.4 });
+  }
+  buyers.sort((a,b)=>b.fee-a.fee);
+
+  const m = $('dealModal');
+  m.innerHTML = `
+    <div class="dm-grab"></div>
+    <div class="dm-head">
+      <div class="dm-emoji">${d.emoji}</div>
+      <div><div class="dm-title">Assign the Contract</div>
+      <div class="dm-sub">${d.addr} · your cost ${fmt$(d.contractPrice)}</div></div>
+    </div>
+    <div class="mao-banner">💸 Cash buyers are bidding! Pick who to assign your contract to and pocket the fee.</div>
+    <div class="dm-section-label">🤝 Buyer Offers</div>
+    <div class="buyer-list">
+      ${buyers.map((b,i)=>`
+        <button class="offer-opt" data-buyer="${i}">
+          <div class="oo-emoji">${b.emoji}</div>
+          <div class="oo-main">
+            <div class="oo-name">${b.name}</div>
+            <div class="oo-desc">${b.fast?'⚡ Fast close, ready now':'Solid cash buyer'}</div>
+          </div>
+          <div class="oo-right">
+            <div class="oo-price" style="color:var(--green-d)">+${fmt$(b.fee)}</div>
+            <div class="oo-odds odds-hi">your fee</div>
+          </div>
+        </button>`).join('')}
+    </div>
+    <button class="btn btn-ghost" data-close="1" style="border-color:#e0d9f2;color:var(--ink-soft)">Hold the Contract</button>`;
+  m.querySelectorAll('[data-buyer]').forEach(btn =>
+    btn.addEventListener('click', () => closeDeal(d, buyers[+btn.dataset.buyer].fee)));
+  m.querySelector('[data-close]').addEventListener('click', closeModal);
+  $('dealOverlay').classList.remove('hidden');
+}
+
+function closeDeal(d, fee){
+  // small chance the deal falls through even at the end (earnest risk)
+  const fallChance = clamp(0.06 - S.upgrades.network*0.01, 0.01, 0.06);
+  const m = $('dealModal');
+  if(Math.random() < fallChance){
+    sfx.fail();
+    S.deals = S.deals.filter(x => x.id !== d.id);
+    S.stats.fellThrough++;
+    m.innerHTML = `<div class="dm-grab"></div>
+      <div class="nego-anim"><div class="na-emoji">💥</div>
+      <div class="na-text" style="color:var(--red)">Buyer backed out!</div>
+      <p style="font-weight:800;color:var(--ink-soft);margin-top:6px">It happens. The contract expired. On to the next one!</p></div>
+      <button class="btn btn-ghost" data-close="1" style="border-color:#e0d9f2;color:var(--ink)">Shake it off</button>`;
+    m.querySelector('[data-close]').addEventListener('click', () => { closeModal(); switchTab('deals'); });
+    toast('💥','Deal fell through — buyer got cold feet.','bad');
+    save(); renderAll();
+    return;
+  }
+
+  // SUCCESS
+  S.cash += fee;
+  S.stats.totalEarned += fee;
+  S.stats.dealsClosed++;
+  if(fee > S.stats.biggest) S.stats.biggest = fee;
+  const prevRank = currentRank();
+  S.deals = S.deals.filter(x => x.id !== d.id);
+
+  sfx.cash();
+  fireConfetti();
+  m.innerHTML = `<div class="dm-grab"></div>
+    <div class="dm-profit-big">
+      <div class="pb-num">+${fmt$(fee)}</div>
+      <div class="pb-lbl">Wholesale fee collected! 🎉</div>
+    </div>
+    <div class="dm-figs">
+      <div class="dm-fig"><span>You bought at</span><b>${fmt$(d.contractPrice)}</b></div>
+      <div class="dm-fig"><span>Assigned for</span><b>${fmt$(d.contractPrice + fee)}</b></div>
+    </div>
+    <button class="btn btn-hunt" data-close="1">🔥 Find the Next Deal</button>`;
+  m.querySelector('[data-close]').addEventListener('click', () => { closeModal(); switchTab(S.deals.length?'deals':'hunt'); });
+  toast('💰', `Closed ${d.addr.split(' ').slice(1).join(' ')} for +${fmt$(fee)}!`, 'gold');
+
+  save();
+  renderAll();
+  // rank-up celebration
+  const newRank = currentRank();
+  if(newRank.name !== prevRank.name){
+    setTimeout(() => { sfx.level(); toast(newRank.icon, `RANK UP! You're now a ${newRank.name}!`, 'gold'); fireConfetti(); }, 600);
+  }
+}
+
+/* ---------- Random events for flavor & replayability ---------- */
+function maybeRandomEvent(){
+  if(Math.random() > 0.22) return;
+  const events = [
+    () => { const bonus = randInt(500,1500); S.cash += bonus; toast('🎁',`Referral bonus! +${fmt$(bonus)}`,'gold'); },
+    () => { S.energy = Math.min(ENERGY_BY_LVL[S.upgrades.energy], S.energy+2); toast('☕','Energy drink! +2 energy','good'); },
+    () => { // a hot motivated lead appears
+      if(S.deals.length < 8){ const d = genDeal(); d.motivation = 5; d.asking = Math.round(d.mao*rand(0.85,0.95)/500)*500; S.deals.push(d); S.stats.leadsFound++; toast('🔥','A super-motivated seller called you!','gold'); } },
+    () => { toast('📰','Market is hot — buyers paying top dollar today!','good'); },
+  ];
+  setTimeout(() => { pick(events)(); save(); renderAll(); }, 500);
+}
+
+/* ============================================================
+   UPGRADES & MARKETS
+   ============================================================ */
+function buyUpgrade(key){
+  const u = UPGRADES[key];
+  const lvl = S.upgrades[key];
+  if(lvl >= u.max) return;
+  const cost = u.cost[lvl+1];
+  if(S.cash < cost){ toast('💸','Not enough cash for that.','bad'); sfx.fail(); return; }
+  S.cash -= cost;
+  S.upgrades[key]++;
+  if(key === 'energy'){ // top off energy when stamina increases
+    S.energy = ENERGY_BY_LVL[S.upgrades.energy];
+  }
+  sfx.buy();
+  toast(u.emoji, `${u.name} → ${u.desc[S.upgrades[key]]}!`, 'good');
+  save(); renderAll();
+}
+
+function switchMarket(id){
+  if(!S.marketsUnlocked.includes(id)) return;
+  S.activeMarket = id;
+  sfx.tap();
+  toast(MARKETS.find(m=>m.id===id).icon, `Now hunting in ${MARKETS.find(m=>m.id===id).name}!`, 'good');
+  save(); renderAll();
+}
+function unlockMarket(id){
+  const m = MARKETS.find(x=>x.id===id);
+  if(S.cash < m.cost){ toast('💸','Not enough to unlock that market.','bad'); sfx.fail(); return; }
+  S.cash -= m.cost;
+  S.marketsUnlocked.push(id);
+  S.activeMarket = id;
+  sfx.level(); fireConfetti();
+  toast(m.icon, `Unlocked ${m.name}! Bigger homes, bigger fees!`, 'gold');
+  save(); renderAll();
+}
+
+/* ============================================================
+   UI PLUMBING: tabs, modal, toast, confetti
+   ============================================================ */
+function switchTab(tab){
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
+  $('tab-' + tab).classList.remove('hidden');
+  $('content').scrollTop = 0;
+}
+
+function closeModal(){ $('dealOverlay').classList.add('hidden'); activeDealId = null; }
+
+let toastTimer;
+function toast(emoji, text, cls=''){
+  const wrap = $('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast ' + cls;
+  t.innerHTML = `<span class="t-emoji">${emoji}</span><span>${text}</span>`;
+  wrap.appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(()=>t.remove(), 350); }, 2600);
+  // cap stack
+  while(wrap.children.length > 3) wrap.firstChild.remove();
+}
+
+/* ---------- Confetti ---------- */
+const cv = $('confetti'); const cx = cv.getContext('2d');
+let confetti = [], confettiRAF = null;
+function sizeCanvas(){ cv.width = innerWidth; cv.height = innerHeight; }
+sizeCanvas(); addEventListener('resize', sizeCanvas);
+const CCOLORS = ['#ff5d8f','#7b5cff','#36c5f0','#36d39a','#ffd23f','#ff924c'];
+function fireConfetti(){
+  for(let i=0;i<90;i++){
+    confetti.push({
+      x: innerWidth/2 + rand(-60,60), y: innerHeight*0.4,
+      vx: rand(-7,7), vy: rand(-14,-4),
+      g: rand(0.25,0.45), size: rand(6,12),
+      color: pick(CCOLORS), rot: rand(0,6.28), vr: rand(-0.3,0.3),
+      life: rand(60,110),
+    });
+  }
+  if(!confettiRAF) stepConfetti();
+}
+function stepConfetti(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  confetti.forEach(p => {
+    p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life--;
+    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.rot);
+    cx.fillStyle = p.color;
+    cx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+    cx.restore();
+  });
+  confetti = confetti.filter(p => p.life > 0 && p.y < cv.height + 30);
+  if(confetti.length){ confettiRAF = requestAnimationFrame(stepConfetti); }
+  else { confettiRAF = null; cx.clearRect(0,0,cv.width,cv.height); }
+}
+
+/* ---------- Floating background emojis ---------- */
+function spawnFloaties(){
+  const wrap = $('floaties');
+  const emojis = ['🏠','🏡','💵','🔑','💰','📈','🏢','💎'];
+  for(let i=0;i<10;i++){
+    const s = document.createElement('span');
+    s.textContent = pick(emojis);
+    s.style.left = rand(0,100)+'%';
+    s.style.fontSize = rand(18,38)+'px';
+    s.style.animationDuration = rand(16,34)+'s';
+    s.style.animationDelay = -rand(0,30)+'s';
+    wrap.appendChild(s);
+  }
+}
+
+/* ============================================================
+   EVENT WIRING
+   ============================================================ */
+function startGame(){
+  $('splash').classList.add('hidden');
+  $('game').classList.remove('hidden');
+  displayCash = 0;
+  renderAll();
+  if(!S.seenHow){ S.seenHow = true; save(); }
+}
+
+function wire(){
+  // splash
+  $('playBtn').addEventListener('click', () => { sfx.tap(); startGame(); });
+  $('howBtn').addEventListener('click', () => { sfx.tap(); $('howScreen').classList.remove('hidden'); });
+  $('howClose').addEventListener('click', () => { sfx.tap(); $('howScreen').classList.add('hidden'); });
+
+  // if save exists, offer wipe
+  if(localStorage.getItem(SAVE_KEY)){
+    const wipe = $('continueWipe');
+    wipe.classList.remove('hidden');
+    wipe.addEventListener('click', () => {
+      if(confirm('Start a brand new game? Your current empire will be erased.')){
+        localStorage.removeItem(SAVE_KEY); S = freshState(); save(); displayCash = 0;
+        toast('✨','Fresh start!','good'); startGame();
+      }
+    });
+  }
+
+  // nav
+  document.querySelectorAll('.nav-btn').forEach(b =>
+    b.addEventListener('click', () => { sfx.tap(); switchTab(b.dataset.tab); }));
+
+  // hunt
+  $('huntBtn').addEventListener('click', doHunt);
+  $('sleepBtn').addEventListener('click', endDay);
+  $('muteBtn').addEventListener('click', () => { S.sound = !S.sound; save(); renderHUD(); if(S.sound) sfx.tap(); });
+
+  // deal list (delegated)
+  $('dealList').addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]');
+    if(!btn) return;
+    const id = +btn.dataset.id;
+    const act = btn.dataset.act;
+    if(act === 'negotiate') openNegotiate(id);
+    else if(act === 'assign') openAssign(id);
+    else if(act === 'drop'){
+      S.deals = S.deals.filter(x => x.id !== id);
+      sfx.tap(); toast('🗑️','Passed on the lead.'); save(); renderAll();
+    }
+  });
+
+  // shop (delegated)
+  $('shopList').addEventListener('click', e => {
+    const b = e.target.closest('[data-up]'); if(!b || b.disabled) return; buyUpgrade(b.dataset.up);
+  });
+  $('marketList').addEventListener('click', e => {
+    const sw = e.target.closest('[data-mkt]');
+    const bu = e.target.closest('[data-mkt-buy]');
+    if(sw) switchMarket(sw.dataset.mkt);
+    else if(bu && !bu.disabled) unlockMarket(bu.dataset.mktBuy);
+  });
+
+  // reset
+  $('resetBtn').addEventListener('click', () => {
+    if(confirm('Reset your entire career? This cannot be undone.')){
+      localStorage.removeItem(SAVE_KEY); S = freshState(); displayCash = 0; save();
+      toast('🗑️','Career reset.','bad'); renderAll(); switchTab('deals');
+    }
+  });
+
+  // overlay click-out
+  $('dealOverlay').addEventListener('click', e => { if(e.target.id === 'dealOverlay') closeModal(); });
+
+  spawnFloaties();
+}
+
+wire();
+// Auto-skip splash if a game is already in progress and they've played a bit
+})();
+
+</script>
+</body>
+</html>
