@@ -1,0 +1,4 @@
+__pycache__/
+*.gcode
+cad/render/node_modules/
+cad/render/m/

@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#fff}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+const loader = new STLLoader();
+const cache = {};
+async function geo(f){ if(!cache[f]) cache[f] = await loader.loadAsync('m/'+f+'.stl'); return cache[f]; }
+window.renderScene = async (spec) => {
+  const [W,H] = spec.size;
+  const renderer = new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer:true});
+  renderer.setPixelRatio(1); renderer.setSize(W,H);
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  document.body.innerHTML=''; document.body.appendChild(renderer.domElement);
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(spec.bg || '#ffffff');
+  const box = new THREE.Box3();
+  for (const m of spec.meshes){
+    const g = await geo(m.file); g.computeVertexNormals();
+    const mat = new THREE.MeshStandardMaterial({color:m.color, roughness:m.rough??0.55, metalness:m.metal??0.0,
+      transparent: m.opacity!==undefined, opacity: m.opacity??1, flatShading:false});
+    const mesh = new THREE.Mesh(g, mat); mesh.castShadow = true; mesh.receiveShadow = true;
+    scene.add(mesh); box.expandByObject(mesh);
+    if (m.edges){ const e = new THREE.LineSegments(new THREE.EdgesGeometry(g, 35), new THREE.LineBasicMaterial({color:m.edges, transparent:true, opacity:0.35})); scene.add(e); }
+  }
+  if (spec.ground !== undefined){
+    const pg = new THREE.PlaneGeometry(2000,2000);
+    const pm = new THREE.ShadowMaterial({opacity:0.18});
+    const p = new THREE.Mesh(pg, pm); p.position.z = spec.ground; p.receiveShadow = true; scene.add(p);
+    if (spec.grid){ const gh = new THREE.GridHelper(spec.grid[0], spec.grid[1], 0x999999, 0xcccccc); gh.rotation.x = Math.PI/2; gh.position.set(spec.grid[2]||0, spec.grid[3]||0, spec.ground+0.05); scene.add(gh); }
+  }
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.6));
+  const d = new THREE.DirectionalLight(0xffffff, 2.2); d.position.set(...(spec.light||[-150,-200,320]));
+  d.castShadow = true; d.shadow.mapSize.set(2048,2048);
+  const s = d.shadow.camera; s.left=-200; s.right=200; s.top=200; s.bottom=-200; s.near=1; s.far=1500; d.shadow.bias=-0.0004;
+  scene.add(d);
+  const d2 = new THREE.DirectionalLight(0xffffff, 0.8); d2.position.set(250,180,120); scene.add(d2);
+  let cam;
+  const c = spec.camera;
+  if (c.ortho){ const h=c.ortho, w=h*W/H; cam = new THREE.OrthographicCamera(-w,w,h,-h,-2000,4000); }
+  else { cam = new THREE.PerspectiveCamera(c.fov||30, W/H, 1, 5000); }
+  cam.up.set(0,0,1); cam.position.set(...c.pos); cam.lookAt(new THREE.Vector3(...c.target));
+  renderer.render(scene, cam);
+  return true;
+};
+window.ready = true;
+</script></body></html>

@@ -1,0 +1,67 @@
+========================================================================
+1. Exported STL integrity and build-volume fit (print orientation)
+   cradle                             watertight=True bodies=1 extent=[120.3, 134.6, 49.0] fits=True margin=7.7 mm overhang>47deg=94.4 mm2
+   base                               watertight=True bodies=1 extent=[140.0, 111.1, 52.8] fits=True margin=5.0 mm overhang>47deg=30.3 mm2
+   pin_single                         watertight=True bodies=1 extent=[13.5, 10.0, 7.0] fits=True margin=68.2 mm overhang>47deg=0.7 mm2
+   pins_x4                            watertight=True bodies=4 extent=[73.5, 10.0, 7.0] fits=True margin=38.2 mm overhang>47deg=2.7 mm2
+   plates/plate1_base_plus_4_pins     watertight=True bodies=5 extent=[140.0, 111.1, 52.8] fits=True margin=5.0 mm overhang>47deg=33.0 mm2
+   plates/plate2_cradle               watertight=True bodies=1 extent=[120.3, 134.6, 49.0] fits=True margin=7.7 mm overhang>47deg=94.4 mm2
+   optional/base_with_ballast_cups    watertight=True bodies=1 extent=[140.0, 111.1, 52.8] fits=True margin=5.0 mm overhang>47deg=30.3 mm2
+2. Building meshes in the assembly frame
+3. Phone fit in the cradle (theta = 0)
+   overlap phone/cradle = 0.000 mm3 (should be 0); min gap 0.0 mm
+   cradle gap to bottom-edge button zone x[-61,-1]: 0.1 mm, top edge 32.41 mm; camera zone overlap 0.0 mm3
+   Lightning plug envelope overlap with cradle: 0.0 mm3
+4. Tilt sweep: cradle + phone vs base (and table plane)
+   collision-free from -17.5 to +27.5 deg (required -15..+25)
+   first contact below: (-18.0, 0.37457219328643987, 0.0, 1.9480293437708731)   above: (28.0, 0.056125498174878885, 0.0, 2.040722274055655)  (deg, cradle mm3, phone mm3, z-clear)
+   min clearance of moving parts above table in -15..+25: 3.02 mm
+   min gap at indexed positions (cradle-base, phone-base): -15:0.3/4.5, -10:0.3/4.5, -5:0.3/4.5, +0:0.3/4.51, +5:0.3/4.48, +10:0.3/4.25, +15:0.3/2.9, +20:0.3/1.38, +25:0.3/1.1
+5. Index pin alignment (vernier) and pin engagement
+   every 5 deg position has exactly one hole pair a 5 mm pin can enter: True (other pairs are >= 2.62 mm misaligned; pin enters only below 0.35 mm)
+     tilt -15: fin hole 3/5 + cheek hole A  (next nearest pair 2.62 mm off)
+     tilt -10: fin hole 4/5 + cheek hole B  (next nearest pair 2.62 mm off)
+     tilt  -5: fin hole 5/5 + cheek hole C  (next nearest pair 2.62 mm off)
+     tilt  +0: fin hole 2/5 + cheek hole A  (next nearest pair 2.62 mm off)
+     tilt  +5: fin hole 3/5 + cheek hole B  (next nearest pair 2.62 mm off)
+     tilt +10: fin hole 4/5 + cheek hole C  (next nearest pair 2.62 mm off)
+     tilt +15: fin hole 1/5 + cheek hole A  (next nearest pair 2.62 mm off)
+     tilt +20: fin hole 2/5 + cheek hole B  (next nearest pair 2.62 mm off)
+     tilt +25: fin hole 3/5 + cheek hole C  (next nearest pair 2.62 mm off)
+   worst-case angular backlash from hole clearance (index + pivot both slack): about 1.34 deg (torque never reverses in range - see below)
+   pivot      pin-base overlap 0.0 mm3, pin-cradle overlap 0.0 mm3
+   index_-15  pin-base overlap 0.0 mm3, pin-cradle overlap 0.0 mm3
+   index_+0   pin-base overlap 0.0 mm3, pin-cradle overlap 0.0 mm3
+   index_+25  pin-base overlap 0.0 mm3, pin-cradle overlap 0.0 mm3
+   pin shank length 8.7 mm vs plate stack 8.3 mm: the snap shoulder sits 0.4 mm past the fin's inner face; tip clear of all geometry (overlaps above)
+   snap bump radial interference (prongs flex): 0.125 mm/side
+6. Rear-camera field of view (16:9 video, full-sensor-width = conservative)
+   ultra_wide_13mm        closest stand point is +3.6 deg outside the frame
+   wide_26mm              closest stand point is +23.1 deg outside the frame
+   ultra_wide_4:3_photo   closest stand point is +0.8 deg outside the frame
+7. Stability (phone + case assumed 300 g) - no_ballast
+   footprint (convex hull of table contact) [140.0, 109.0] mm
+   tilt -15: CoG height  55.5 mm, inside=True, margin front  41.2 / back  67.8 mm, tip angle F 36.6 / B 50.7 deg, push to tip at phone top 1.21 N, pivot torque   26.2 N.mm -> index pin 0.87 N
+   tilt -10: CoG height  54.7 mm, inside=True, margin front  44.4 / back  64.6 mm, tip angle F 39.1 / B 49.8 deg, push to tip at phone top 1.3 N, pivot torque   36.3 N.mm -> index pin 1.21 N
+   tilt  -5: CoG height  53.5 mm, inside=True, margin front  47.5 / back  61.5 mm, tip angle F 41.6 / B 49.0 deg, push to tip at phone top 1.39 N, pivot torque   46.3 N.mm -> index pin 1.54 N
+   tilt  +0: CoG height  52.2 mm, inside=True, margin front  50.4 / back  58.6 mm, tip angle F 44.0 / B 48.3 deg, push to tip at phone top 1.48 N, pivot torque   55.8 N.mm -> index pin 1.86 N
+   tilt  +5: CoG height  50.5 mm, inside=True, margin front  53.3 / back  55.7 mm, tip angle F 46.5 / B 47.8 deg, push to tip at phone top 1.56 N, pivot torque   64.9 N.mm -> index pin 2.16 N
+   tilt +10: CoG height  48.6 mm, inside=True, margin front  56.0 / back  53.0 mm, tip angle F 49.0 / B 47.5 deg, push to tip at phone top 1.55 N, pivot torque   73.6 N.mm -> index pin 2.45 N
+   tilt +15: CoG height  46.5 mm, inside=True, margin front  58.5 / back  50.5 mm, tip angle F 51.5 / B 47.4 deg, push to tip at phone top 1.48 N, pivot torque   81.7 N.mm -> index pin 2.72 N
+   tilt +20: CoG height  44.2 mm, inside=True, margin front  60.8 / back  48.2 mm, tip angle F 54.0 / B 47.5 deg, push to tip at phone top 1.41 N, pivot torque   89.1 N.mm -> index pin 2.97 N
+   tilt +25: CoG height  41.7 mm, inside=True, margin front  62.9 / back  46.1 mm, tip angle F 56.5 / B 47.9 deg, push to tip at phone top 1.35 N, pivot torque   95.9 N.mm -> index pin 3.2 N
+   phone CoG height above table: 55.0 mm at 0 deg
+   gravity torque keeps one sign over the whole range: True (pin always loaded the same way -> repeatable angle)
+7. Stability (phone + case assumed 300 g) - ballast_cups_68g
+   footprint (convex hull of table contact) [140.0, 109.0] mm
+   tilt -15: CoG height  46.9 mm, inside=True, margin front  50.2 / back  58.8 mm, tip angle F 46.9 / B 51.4 deg, push to tip at phone top 1.77 N, pivot torque   26.2 N.mm -> index pin 0.87 N
+   tilt -10: CoG height  46.2 mm, inside=True, margin front  52.8 / back  56.2 mm, tip angle F 48.8 / B 50.6 deg, push to tip at phone top 1.87 N, pivot torque   36.3 N.mm -> index pin 1.21 N
+   tilt  -5: CoG height  45.3 mm, inside=True, margin front  55.3 / back  53.7 mm, tip angle F 50.7 / B 49.8 deg, push to tip at phone top 1.9 N, pivot torque   46.3 N.mm -> index pin 1.54 N
+   tilt  +0: CoG height  44.1 mm, inside=True, margin front  57.8 / back  51.2 mm, tip angle F 52.6 / B 49.2 deg, push to tip at phone top 1.81 N, pivot torque   55.8 N.mm -> index pin 1.86 N
+   tilt  +5: CoG height  42.8 mm, inside=True, margin front  60.2 / back  48.8 mm, tip angle F 54.6 / B 48.8 deg, push to tip at phone top 1.73 N, pivot torque   64.9 N.mm -> index pin 2.16 N
+   tilt +10: CoG height  41.2 mm, inside=True, margin front  62.4 / back  46.6 mm, tip angle F 56.6 / B 48.5 deg, push to tip at phone top 1.65 N, pivot torque   73.6 N.mm -> index pin 2.45 N
+   tilt +15: CoG height  39.5 mm, inside=True, margin front  64.5 / back  44.5 mm, tip angle F 58.5 / B 48.5 deg, push to tip at phone top 1.57 N, pivot torque   81.7 N.mm -> index pin 2.72 N
+   tilt +20: CoG height  37.5 mm, inside=True, margin front  66.4 / back  42.6 mm, tip angle F 60.5 / B 48.6 deg, push to tip at phone top 1.51 N, pivot torque   89.1 N.mm -> index pin 2.97 N
+   tilt +25: CoG height  35.5 mm, inside=True, margin front  68.1 / back  40.9 mm, tip angle F 62.5 / B 49.1 deg, push to tip at phone top 1.44 N, pivot torque   95.9 N.mm -> index pin 3.2 N
+   phone CoG height above table: 55.0 mm at 0 deg
+   gravity torque keeps one sign over the whole range: True (pin always loaded the same way -> repeatable angle)

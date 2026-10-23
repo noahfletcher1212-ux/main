@@ -1,0 +1,19 @@
+# PrusaSlicer PrusaSlicer-2.7.2+UNKNOWN estimates, 2026-10-23
+
+## PLA, adventurer3_pla_0.2mm.ini (recommended plates)
+plate1_base_plus_4_pins 2h 39m 18s   14.92 g   5001.50 mm
+plate2_cradle  2h 32m 2s   14.23 g   4770.71 mm
+
+## PLA, individual parts (for reference)
+base         2h 18m 56s   13.63 g   4570.26 mm
+cradle        2h 32m 2s   14.23 g   4770.71 mm
+pins_x4         20m 35s    1.31 g    438.88 mm
+base_with_ballast_cups 2h 57m 30s   18.18 g   6095.07 mm
+
+## PETG, adventurer3_petg_0.2mm.ini
+plate1_base_plus_4_pins 2h 39m 26s   15.28 g   5001.50 mm
+plate2_cradle  2h 32m 2s   14.57 g   4770.71 mm
+
+## Sensitivity: PLA at 0.18 mm layers (FlashPrint-style layer height, same speeds)
+plate1_base_plus_4_pins 2h 52m 43s   14.90 g   4994.34 mm
+plate2_cradle 2h 46m 21s   14.15 g   4743.93 mm
